@@ -377,7 +377,7 @@ select.finput{cursor:pointer}
       onkeydown="if(event.key==='Enter') licActivate()">
   </div>
   <div class="lic-err" id="lic-err"></div>
-  <button class="lic-btn" onclick="licActivate()">✅ Activer la licence</button>
+  <button class="lic-btn" id="lic-btn" onclick="licActivate()">✅ Activer la licence</button>
   <div class="lic-expiry-info" id="lic-expiry-info">
     Contactez le support pour obtenir votre clé
   </div>
@@ -1692,6 +1692,66 @@ const LIC_SECRET = 'P2PBOARD_SECRET_2026_XOF';
 const LIC_STORE  = 'p2p_licence_v2';
 const _B32       = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+/* ══════════════════════════════════════════════
+   LIAISON CLOUD — JSONBin.io
+   → Enregistre quelle clé est liée à quel appareil
+   → JSONBIN_BIN_ID : créez un bin vide {} sur jsonbin.io
+   → JSONBIN_API_KEY : votre clé API JSONBin ($2a$10$...)
+══════════════════════════════════════════════ */
+const JSONBIN_BIN_ID  = '69e20230856a682189439d39';   // ex: 6850abc123def456
+const JSONBIN_API_KEY = '$2a$10$iAMXHl0nrB.zTU34Vjg1Jeqcb4wdOZnGV4sKCzxFKvldO9rvV7uCe';   // ex: $2a$10$xxxxxxxxxxxx
+
+async function _cloudGet() {
+  try {
+    const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': JSONBIN_API_KEY }
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.record || {};
+  } catch { return null; }
+}
+
+async function _cloudSet(data) {
+  try {
+    const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+/* Vérifie ou lie une clé à un appareil dans le cloud
+   Retourne : 'ok' | 'taken' | 'offline'
+*/
+async function cloudBindKey(cleanKey, deviceId) {
+  const db = await _cloudGet();
+  if (db === null) return 'offline'; // Pas de réseau — on autorise en mode dégradé
+
+  if (db[cleanKey]) {
+    // Clé déjà enregistrée
+    if (db[cleanKey].deviceId === deviceId) return 'ok'; // Même appareil ✅
+    return 'taken'; // Appareil différent ❌
+  }
+
+  // Première activation : lier la clé à cet appareil
+  db[cleanKey] = { deviceId, activatedAt: new Date().toISOString() };
+  const saved = await _cloudSet(db);
+  return saved ? 'ok' : 'offline';
+}
+
+/* Vérifie côté cloud sans modifier (pour le boot)
+   Retourne : 'ok' | 'taken' | 'offline'
+*/
+async function cloudCheckKey(cleanKey, deviceId) {
+  const db = await _cloudGet();
+  if (db === null) return 'offline';
+  if (!db[cleanKey]) return 'ok'; // Pas encore enregistré (ne devrait pas arriver après 1ère activation)
+  return db[cleanKey].deviceId === deviceId ? 'ok' : 'taken';
+}
+
 /* ── Fingerprint appareil (DeviceId) ── */
 function getDeviceId() {
   let id = localStorage.getItem('p2p_device_id');
@@ -1757,6 +1817,8 @@ function licFormatInput(el) {
 async function licActivate() {
   const raw=document.getElementById('lic-input').value;
   const errEl=document.getElementById('lic-err');
+  const btnEl=document.getElementById('lic-btn');
+
   const res=await licValidate(raw);
   if(!res.ok) {
     errEl.textContent='⚠ '+res.msg;
@@ -1767,15 +1829,34 @@ async function licActivate() {
     setTimeout(()=>inp.style.borderColor='',1500);
     return;
   }
+
   const cleanKey = raw.replace(/[-\s]/g,'').toUpperCase();
   const deviceId = getDeviceId();
-  // Stocke la clé liée à ce deviceId
+
+  // Vérification cloud : la clé est-elle libre sur cet appareil ?
+  if(btnEl) { btnEl.textContent='⏳ Vérification…'; btnEl.disabled=true; }
+  const cloudRes = await cloudBindKey(cleanKey, deviceId);
+  if(btnEl) { btnEl.textContent='✅ Activer la licence'; btnEl.disabled=false; }
+
+  if(cloudRes === 'taken') {
+    errEl.textContent='⛔ Cette clé est déjà activée sur un autre appareil. Contactez le support.';
+    const inp=document.getElementById('lic-input');
+    inp.classList.remove('shake'); void inp.offsetWidth;
+    inp.classList.add('shake');
+    inp.style.borderColor='var(--red)';
+    setTimeout(()=>inp.style.borderColor='',1500);
+    return;
+  }
+  // cloudRes === 'ok' ou 'offline' → on autorise (mode dégradé hors ligne)
+
+  // Stocke la clé liée à ce deviceId localement
   localStorage.setItem(LIC_STORE, JSON.stringify({
     key:      cleanKey,
     deviceId: deviceId,
     expiry:   res.expDate.toISOString(),
     daysLeft: res.daysLeft,
-    activated:new Date().toISOString()
+    activated:new Date().toISOString(),
+    cloudBound: cloudRes === 'ok'
   }));
   document.getElementById('licence-screen').style.display='none';
   bootAfterLicence();
@@ -1790,12 +1871,24 @@ async function licCheck() {
   let stored;
   try { stored=JSON.parse(raw); } catch { return 'none'; }
 
-  // Vérifier que la clé appartient à cet appareil
+  // Vérifier que la clé appartient à cet appareil (contrôle local)
   const deviceId=getDeviceId();
   if(stored.deviceId && stored.deviceId !== deviceId) return 'wrongdevice';
 
   const res=await licValidate(stored.key||'');
   if(!res.ok) return 'expired';
+
+  // Vérification cloud périodique (1 fois toutes les 12h max pour économiser les appels)
+  const lastCloudCheck = parseInt(localStorage.getItem('p2p_last_cloud_check')||'0');
+  const now = Date.now();
+  if(now - lastCloudCheck > 12 * 3600 * 1000) {
+    const cloudRes = await cloudCheckKey(stored.key, deviceId);
+    if(cloudRes === 'taken') return 'wrongdevice';
+    if(cloudRes === 'ok') {
+      localStorage.setItem('p2p_last_cloud_check', String(now));
+      stored.cloudBound = true;
+    }
+  }
 
   // Mettre à jour le daysLeft en cache
   stored.daysLeft = res.daysLeft;
