@@ -315,35 +315,52 @@ select.finput{cursor:pointer}
   padding:30px;overflow-y:auto;
 }
 .lic-logo{font-size:54px;margin-bottom:14px;filter:drop-shadow(0 0 18px rgba(240,180,41,.35))}
-.lic-title{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:5px;text-align:center}
+.lic-title{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.02em;
+  margin-bottom:5px;text-align:center}
 .lic-sub{font-size:12px;color:var(--text2);margin-bottom:10px;text-align:center;line-height:1.65}
-.lic-badge{display:inline-block;border-radius:20px;padding:5px 16px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:24px;letter-spacing:.06em}
+.lic-badge{display:inline-block;border-radius:20px;padding:5px 16px;font-size:11px;font-weight:700;
+  font-family:'JetBrains Mono',monospace;margin-bottom:24px;letter-spacing:.06em}
 .lic-badge.err{background:rgba(255,75,107,.12);color:var(--red);border:1px solid rgba(255,75,107,.3)}
 .lic-badge.warn{background:rgba(240,180,41,.12);color:var(--gold);border:1px solid rgba(240,180,41,.3)}
+.lic-badge.ok{background:rgba(16,217,138,.12);color:var(--green);border:1px solid rgba(16,217,138,.3)}
 .lic-field-wrap{width:100%;max-width:320px;margin-bottom:6px}
-.lic-field-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:6px;display:block}
+.lic-field-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;
+  font-family:'JetBrains Mono',monospace;margin-bottom:6px;display:block}
 .lic-input{
-  width:100%;background:var(--card2);border:1px solid var(--border2);
-  border-radius:var(--r2);color:var(--text);
-  font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;
-  padding:14px 16px;outline:none;text-align:center;
-  letter-spacing:.1em;text-transform:uppercase;
+  width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:var(--r2);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;
+  padding:14px 16px;outline:none;text-align:center;letter-spacing:.1em;text-transform:uppercase;
   transition:border-color .2s;-webkit-appearance:none;
 }
 .lic-input:focus{border-color:var(--gold)}
 .lic-input.shake{animation:licShake .35s ease}
-@keyframes licShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.lic-err{font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;min-height:16px;margin-bottom:14px;text-align:center;width:100%;max-width:320px}
+@keyframes licShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.lic-err{font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;
+  min-height:16px;margin-bottom:14px;text-align:center;width:100%;max-width:320px}
 .lic-btn{
-  width:100%;max-width:320px;
-  background:linear-gradient(135deg,var(--gold),#C8890A);
-  color:#060E1E;border:none;border-radius:var(--r2);
-  font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;
-  padding:15px;cursor:pointer;transition:opacity .15s,transform .12s;
-  margin-bottom:18px;letter-spacing:.01em;
+  width:100%;max-width:320px;background:linear-gradient(135deg,var(--gold),#C8890A);
+  color:#060E1E;border:none;border-radius:var(--r2);font-family:'Space Grotesk',sans-serif;
+  font-size:15px;font-weight:700;padding:15px;cursor:pointer;
+  transition:opacity .15s,transform .12s;margin-bottom:18px;
 }
 .lic-btn:active{opacity:.85;transform:scale(.98)}
-.lic-expiry-info{font-size:11px;color:var(--text3);text-align:center;font-family:'JetBrains Mono',monospace;line-height:1.8}
+.lic-footer-info{font-size:11px;color:var(--text3);text-align:center;
+  font-family:'JetBrains Mono',monospace;line-height:1.8;max-width:300px}
+
+/* ═══ BANNIÈRE EXPIRATION IMMINENTE ═══ */
+#expiry-banner{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  background:linear-gradient(135deg,rgba(240,180,41,.15),rgba(240,180,41,.08));
+  border-bottom:1px solid rgba(240,180,41,.4);
+  padding:10px 16px;display:none;align-items:center;justify-content:space-between;
+  z-index:400;animation:slideDown .3s ease;
+}
+.exp-ban-left{display:flex;align-items:center;gap:8px}
+.exp-ban-txt{font-size:12px;color:var(--gold);font-weight:600}
+.exp-ban-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.exp-ban-close{background:none;border:none;color:var(--text3);font-size:16px;
+  cursor:pointer;padding:4px 8px;line-height:1}
 
 /* ═══ INSTALL BUTTON ═══ */
 .install-banner{
@@ -365,22 +382,33 @@ select.finput{cursor:pointer}
 <div id="licence-screen">
   <div class="lic-logo">🔑</div>
   <div class="lic-title">P2P Board</div>
-  <div class="lic-sub">Entrez votre clé d'activation<br>pour accéder à l'application</div>
+  <div class="lic-sub" id="lic-sub-txt">Entrez votre clé d'activation<br>pour accéder à l'application</div>
   <div class="lic-badge err" id="lic-badge">⛔ Licence requise</div>
-
   <div class="lic-field-wrap">
     <label class="lic-field-lbl">Clé d'activation</label>
     <input class="lic-input" id="lic-input" type="text" maxlength="23"
       placeholder="XXXXX-XXXXX-XXXXX-XXXXX"
       autocomplete="off" autocorrect="off" spellcheck="false"
-      oninput="licFormatInput(this)"
+      oninput="licFmtInput(this)"
       onkeydown="if(event.key==='Enter') licActivate()">
   </div>
   <div class="lic-err" id="lic-err"></div>
   <button class="lic-btn" onclick="licActivate()">✅ Activer la licence</button>
-  <div class="lic-expiry-info" id="lic-expiry-info">
-    Contactez le support pour obtenir votre clé
+  <div class="lic-footer-info" id="lic-footer-info">
+    Contactez le support pour obtenir votre clé d'activation
   </div>
+</div>
+
+<!-- ═══════ BANNIÈRE EXPIRATION ═══════ -->
+<div id="expiry-banner">
+  <div class="exp-ban-left">
+    <span style="font-size:18px">⚠️</span>
+    <div>
+      <div class="exp-ban-txt" id="exp-ban-txt">Licence bientôt expirée</div>
+      <div class="exp-ban-sub" id="exp-ban-sub">Renouvelez avant expiration</div>
+    </div>
+  </div>
+  <button class="exp-ban-close" onclick="document.getElementById('expiry-banner').style.display='none'">✕</button>
 </div>
 
 <!-- ═══════ LOCK SCREEN ═══════ -->
@@ -636,10 +664,6 @@ select.finput{cursor:pointer}
       <div class="sim-input sim-input-auto" id="sim-fmax-disp">—</div>
       <input type="hidden" id="sim-fmax">
     </div>
-    <div class="sim-field">
-      <label class="sim-field-lbl">Pourcentage sur frais (PF) <span class="sim-field-unit">0 – 1</span></label>
-      <input type="number" class="sim-input" id="sim-pf" placeholder="1" value="1" min="0" max="1" step="0.01" inputmode="decimal">
-    </div>
   </div>
 
   <button class="btn btn-gold" style="margin-top:10px" onclick="calcSim()">⚡ Calculer</button>
@@ -735,14 +759,11 @@ select.finput{cursor:pointer}
   <div class="slbl">Données</div>
   <div class="scard">
     <div class="srow" style="cursor:pointer" onclick="exportData()">
-      <div><div class="s-lbl">📤 Exporter les données</div><div class="s-sub">Télécharger un fichier JSON de sauvegarde</div></div>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--text3);flex-shrink:0"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <div><div class="s-lbl">📤 Exporter les données</div><div class="s-sub">Copier JSON dans presse-papier</div></div>
     </div>
-    <div class="srow" style="cursor:pointer" onclick="document.getElementById('import-file-input').click()">
-      <div><div class="s-lbl">📥 Importer des données</div><div class="s-sub">Restaurer depuis un fichier JSON</div></div>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--text3);flex-shrink:0"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <div class="srow" style="cursor:pointer" onclick="importData()">
+      <div><div class="s-lbl">📥 Importer des données</div><div class="s-sub">Restaurer depuis JSON</div></div>
     </div>
-    <input type="file" id="import-file-input" accept=".json,application/json" style="display:none" onchange="importDataFromFile(event)">
     <div class="srow" style="cursor:pointer" onclick="confirmReset()">
       <div><div class="s-lbl" style="color:var(--red)">🗑 Effacer toutes les données</div><div class="s-sub">Action irréversible</div></div>
     </div>
@@ -1539,15 +1560,13 @@ function calcSim() {
   const qv   = parseFloat(document.getElementById('sim-qv').value)   || qa;
   const max  = parseFloat(document.getElementById('sim-max').value)  || 0;
   const fmax = parseFloat(document.getElementById('sim-fmax').value) || getFmax(max);
-  const pfRaw = document.getElementById('sim-pf').value;
-  const pf   = pfRaw === '' ? 1 : Math.min(1, Math.max(0, parseFloat(pfRaw) || 1));
 
   if (!pa || !qa || !pr) { showToast('Remplissez PA, QA et PR', true); return; }
 
   // Formules
   const prixAchatTotal    = pa * qa + fa;
   const prixRevente       = pr * qv;
-  const totalFraisRevente = max > 0 ? ((prixRevente / max) * fmax) * pf : 0;
+  const totalFraisRevente = max > 0 ? (prixRevente / max) * fmax : 0;
   const prixReventeTotal  = prixRevente + totalFraisRevente;
   const revenuMinimal     = prixReventeTotal - prixAchatTotal;
   const isPos             = revenuMinimal >= 0;
@@ -1604,45 +1623,26 @@ function saveSettings() {
 }
 
 function exportData() {
-  const payload = { cfg, trades, exportedAt: new Date().toISOString(), version: '2.0' };
-  const json    = JSON.stringify(payload, null, 2);
-  const blob    = new Blob([json], { type: 'application/json' });
-  const url     = URL.createObjectURL(blob);
-  const a       = document.createElement('a');
-  const date    = new Date().toISOString().slice(0,10);
-  a.href        = url;
-  a.download    = `p2p-board-backup-${date}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Sauvegarde téléchargée ✓');
+  const d = JSON.stringify({cfg,trades,exportedAt:new Date().toISOString()},null,2);
+  try { navigator.clipboard.writeText(d); showToast('Données copiées ✓'); }
+  catch(e){ showToast('Erreur export',true); }
 }
 
-function importDataFromFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  // Réinitialiser l'input pour pouvoir réimporter le même fichier si besoin
-  event.target.value = '';
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const parsed = JSON.parse(e.target.result);
-      if (!parsed.trades || !Array.isArray(parsed.trades)) throw new Error('Format invalide');
-      const count = parsed.trades.length;
-      if (!confirm(`Importer ${count} session(s) ?\n\nAttention : vos données actuelles seront remplacées.`)) return;
-      trades = parsed.trades;
-      if (parsed.cfg) Object.assign(cfg, parsed.cfg);
-      save();
-      renderDash();
-      renderSettings();
-      showToast(`${count} session(s) importée(s) ✓`);
-    } catch(err) {
-      showToast('Fichier invalide ou corrompu', true);
-    }
-  };
-  reader.onerror = () => showToast('Erreur de lecture du fichier', true);
-  reader.readAsText(file);
+function importData() {
+  const raw = prompt('Collez vos données JSON exportées ici :');
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed.trades || !Array.isArray(parsed.trades)) throw new Error('Format invalide');
+    if (!confirm(`Importer ${parsed.trades.length} session(s) ? Les données actuelles seront remplacées.`)) return;
+    trades = parsed.trades;
+    if (parsed.cfg) Object.assign(cfg, parsed.cfg);
+    save();
+    showToast(`${trades.length} sessions importées ✓`);
+    renderDash();
+  } catch(e) {
+    showToast('JSON invalide ou corrompu', true);
+  }
 }
 
 function confirmReset() {
@@ -1671,18 +1671,27 @@ document.addEventListener('visibilitychange', () => {
 });
 
 /* ══════════════════════════════════════════════
-   SYSTÈME DE LICENCE v1.0
-   Format clé : AAAAA-BBBBB-CCCCC-DDDDD (20 chars + 3 tirets)
-   Structure (12 bytes encodés en Base32):
-     [0-3]  = date expiration (nb jours depuis epoch, uint32 BE)
-     [4-6]  = 3 premiers octets HMAC-SHA256(days:noise)
-     [7-10] = noise aléatoire (4 bytes)
-     [11]   = padding aléatoire
+   SYSTÈME DE LICENCE v2.0 — BINDING APPAREIL
+   ─────────────────────────────────────────────
+   Clé format : AAAAA-BBBBB-CCCCC-DDDDD (20 chars Base32 + 3 tirets)
+   Structure interne (12 bytes) :
+     [0-3]  expiry (nb jours depuis epoch, uint32 BE)
+     [4-6]  3 bytes HMAC-SHA256(days:noise, LIC_SECRET)
+     [7-10] noise aléatoire (4 bytes)
+     [11]   padding aléatoire
+   Stockage local :
+     { key, expiry, deviceId, boundAt }
+   Liaison appareil :
+     deviceId = UUID stable généré à la première visite
+     → la clé est re-signée avec deviceId lors de l'activation
+     → à chaque ouverture, on vérifie que le deviceId correspond
 ══════════════════════════════════════════════ */
-const LIC_SECRET = 'P2PBOARD_SECRET_2026_XOF';
-const LIC_STORE  = 'p2p_licence_v1';
-const _B32       = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans I, O, 1, 0
+const LIC_SECRET  = 'P2PBOARD_SECRET_2026_XOF'; // ← doit être identique à keygen.html
+const LIC_STORE   = 'p2p_licence_v2';
+const DEV_ID_KEY  = 'p2p_device_id';
+const _B32        = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+/* ── Base32 ── */
 function _b32enc(bytes) {
   let bits=0,val=0,out='';
   for(const b of bytes){val=(val<<8)|b;bits+=8;while(bits>=5){bits-=5;out+=_B32[(val>>bits)&31];}}
@@ -1700,94 +1709,175 @@ function _b32dec(str) {
   }
   return new Uint8Array(out);
 }
+
+/* ── HMAC-SHA256 ── */
 async function _licHmac(data) {
-  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(LIC_SECRET),
-    {name:'HMAC',hash:'SHA-256'},false,['sign']);
-  return new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(data)));
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(LIC_SECRET),
+    {name:'HMAC',hash:'SHA-256'}, false, ['sign']
+  );
+  return new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data)));
 }
 
-/* Valide une clé brute, retourne {ok, msg?, expDate?, daysLeft?} */
-async function licValidate(raw) {
-  const clean=raw.replace(/[-\s]/g,'').toUpperCase();
-  if(clean.length!==20) return {ok:false,msg:'Longueur incorrecte (20 caractères requis)'};
-  const bytes=_b32dec(clean);
-  if(!bytes||bytes.length<11) return {ok:false,msg:'Clé malformée'};
-  const days=(bytes[0]<<24)|(bytes[1]<<16)|(bytes[2]<<8)|bytes[3];
-  const expDate=new Date(days*86400000);
-  const nowDays=Math.floor(Date.now()/86400000);
-  if(days<nowDays) return {ok:false,msg:'Clé expirée le '+expDate.toLocaleDateString('fr-FR'),expDate};
-  const noise=Array.from(bytes.slice(7,11)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  const hmac=await _licHmac(days+':'+noise);
-  if(hmac[0]!==bytes[4]||hmac[1]!==bytes[5]||hmac[2]!==bytes[6])
-    return {ok:false,msg:'Signature invalide — clé incorrecte'};
-  return {ok:true,expDate,daysLeft:days-nowDays};
+/* ── Identifiant appareil stable ── */
+function getDeviceId() {
+  let id = localStorage.getItem(DEV_ID_KEY);
+  if (!id) {
+    // Génère un UUID v4 aléatoire
+    id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+    localStorage.setItem(DEV_ID_KEY, id);
+  }
+  return id;
 }
 
-/* Formate l'input en groupes de 5 */
-function licFormatInput(el) {
-  let v=el.value.replace(/[^A-Z2-9a-z]/gi,'').toUpperCase().slice(0,20);
-  el.value=v.match(/.{1,5}/g)?.join('-')||v;
-  document.getElementById('lic-err').textContent='';
+/* ── Validation de la clé brute (sans device binding) ── */
+async function _licValidateRaw(raw) {
+  const clean = raw.replace(/[-\s]/g,'').toUpperCase();
+  if (clean.length !== 20) return {ok:false, msg:'Clé invalide (20 caractères requis)'};
+  const bytes = _b32dec(clean);
+  if (!bytes || bytes.length < 11) return {ok:false, msg:'Clé malformée'};
+  const days = (bytes[0]<<24)|(bytes[1]<<16)|(bytes[2]<<8)|bytes[3];
+  const expDate = new Date(days * 86400000);
+  const nowDays = Math.floor(Date.now() / 86400000);
+  if (days < nowDays) return {ok:false, msg:'Clé expirée le '+expDate.toLocaleDateString('fr-FR'), expDate};
+  const noise = Array.from(bytes.slice(7,11)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const hmac  = await _licHmac(days + ':' + noise);
+  if (hmac[0]!==bytes[4] || hmac[1]!==bytes[5] || hmac[2]!==bytes[6])
+    return {ok:false, msg:'Clé incorrecte ou falsifiée'};
+  return {ok:true, expDate, daysLeft: days - nowDays, noise};
+}
+
+/* ── Hash de liaison appareil ── */
+async function _deviceHash(keyClean, deviceId) {
+  const h = await _licHmac('BIND:' + keyClean + ':' + deviceId);
+  return Array.from(h.slice(0,8)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── Formatage input ── */
+function licFmtInput(el) {
+  let v = el.value.replace(/[^A-Z2-9a-z]/gi,'').toUpperCase().slice(0,20);
+  el.value = v.match(/.{1,5}/g)?.join('-') || v;
+  document.getElementById('lic-err').textContent = '';
   el.classList.remove('shake');
 }
 
-/* Tenter d'activer la licence saisie */
+/* ── Activation (première utilisation de la clé) ── */
 async function licActivate() {
-  const raw=document.getElementById('lic-input').value;
-  const errEl=document.getElementById('lic-err');
-  const res=await licValidate(raw);
-  if(!res.ok) {
-    errEl.textContent='⚠ '+res.msg;
-    const inp=document.getElementById('lic-input');
+  const raw    = document.getElementById('lic-input').value;
+  const errEl  = document.getElementById('lic-err');
+  const inp    = document.getElementById('lic-input');
+
+  const res = await _licValidateRaw(raw);
+  if (!res.ok) {
+    errEl.textContent = '⚠ ' + res.msg;
     inp.classList.remove('shake');
-    void inp.offsetWidth; // reflow pour redémarrer l'animation
+    void inp.offsetWidth;
     inp.classList.add('shake');
-    inp.style.borderColor='var(--red)';
-    setTimeout(()=>inp.style.borderColor='',1500);
+    inp.style.borderColor = 'var(--red)';
+    setTimeout(() => inp.style.borderColor = '', 1500);
     return;
   }
-  localStorage.setItem(LIC_STORE,JSON.stringify({
-    key:raw.replace(/[-\s]/g,'').toUpperCase(),
-    expiry:res.expDate.toISOString(),
-    activated:new Date().toISOString()
+
+  // Lier la clé à cet appareil
+  const keyClean = raw.replace(/[-\s]/g,'').toUpperCase();
+  const deviceId = getDeviceId();
+  const devHash  = await _deviceHash(keyClean, deviceId);
+
+  localStorage.setItem(LIC_STORE, JSON.stringify({
+    key     : keyClean,
+    expiry  : res.expDate.toISOString(),
+    devHash : devHash,
+    boundAt : new Date().toISOString()
   }));
-  document.getElementById('licence-screen').style.display='none';
+
+  document.getElementById('licence-screen').style.display = 'none';
   bootAfterLicence();
 }
 
-/* Vérification au démarrage */
+/* ── Vérification complète au démarrage ── */
 async function licCheck() {
-  const stored=localStorage.getItem(LIC_STORE);
-  if(!stored) { _showLicScreen('⛔ Licence requise','err',null); return false; }
-  let parsed;
-  try { parsed=JSON.parse(stored); } catch { _showLicScreen('⛔ Données licence corrompues','err',null); return false; }
-  const res=await licValidate(parsed.key||'');
-  if(!res.ok) { _showLicScreen('⛔ '+res.msg,'err',res.expDate); return false; }
-  if(res.daysLeft<=5) { _showLicScreen(`⚠ Expire dans ${res.daysLeft} jour(s) — Renouvelez`,'warn',res.expDate); return false; }
+  const stored = localStorage.getItem(LIC_STORE);
+
+  // Pas de licence enregistrée → demander la clé
+  if (!stored) {
+    _showLicScreen('⛔ Licence requise', 'err', null, 'Entrez votre clé d\'activation pour accéder à l\'application');
+    return false;
+  }
+
+  let lic;
+  try { lic = JSON.parse(stored); } catch {
+    _showLicScreen('⛔ Données corrompues', 'err', null, 'Veuillez entrer à nouveau votre clé');
+    return false;
+  }
+
+  // Vérifier la clé cryptographiquement
+  const res = await _licValidateRaw(lic.key || '');
+  if (!res.ok) {
+    // Expirée → demander renouvellement
+    _showLicScreen('⛔ Licence expirée', 'err', res.expDate,
+      'Votre licence a expiré. Contactez le support pour renouveler.');
+    return false;
+  }
+
+  // Vérifier que c'est bien le même appareil
+  const deviceId   = getDeviceId();
+  const devHashNow = await _deviceHash(lic.key, deviceId);
+  if (devHashNow !== lic.devHash) {
+    _showLicScreen('⛔ Licence non valide sur cet appareil', 'err', null,
+      'Cette licence est déjà utilisée sur un autre appareil.\nContactez le support.');
+    return false;
+  }
+
+  // ✅ Licence valide — vérifier l'expiration imminente (≤ 5 jours)
+  if (res.daysLeft <= 5) {
+    _scheduleExpiryBanner(res.daysLeft, res.expDate);
+  }
+
   return true;
 }
 
-function _showLicScreen(badge,type,expDate) {
-  const scr=document.getElementById('licence-screen');
-  const b=document.getElementById('lic-badge');
-  const info=document.getElementById('lic-expiry-info');
-  b.textContent=badge; b.className='lic-badge '+type;
-  info.textContent=expDate
-    ? 'Expiration : '+expDate.toLocaleDateString('fr-FR')+' — Contactez le support'
+/* ── Afficher l'écran de licence ── */
+function _showLicScreen(badge, type, expDate, subTxt) {
+  const scr  = document.getElementById('licence-screen');
+  const b    = document.getElementById('lic-badge');
+  const sub  = document.getElementById('lic-sub-txt');
+  const info = document.getElementById('lic-footer-info');
+  b.textContent = badge;
+  b.className   = 'lic-badge ' + type;
+  if (subTxt) sub.innerHTML = subTxt.replace('\n','<br>');
+  info.textContent = expDate
+    ? 'Expiration : ' + expDate.toLocaleDateString('fr-FR') + ' · Contactez le support'
     : 'Contactez le support pour obtenir votre clé';
-  scr.style.display='flex';
+  scr.style.display = 'flex';
 }
 
-/* Après validation licence → flux normal PIN → Dashboard */
+/* ── Bannière d'avertissement expiration imminente ── */
+function _scheduleExpiryBanner(daysLeft, expDate) {
+  // Afficher après que l'app soit chargée (léger délai)
+  setTimeout(() => {
+    const banner  = document.getElementById('expiry-banner');
+    const txt     = document.getElementById('exp-ban-txt');
+    const sub     = document.getElementById('exp-ban-sub');
+    txt.textContent = daysLeft === 0
+      ? '⚠️ Licence expire aujourd\'hui !'
+      : `⚠️ Licence expire dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}`;
+    sub.textContent = 'Expiration le ' + expDate.toLocaleDateString('fr-FR') + ' — Contactez le support pour renouveler';
+    banner.style.display = 'flex';
+  }, 1200);
+}
+
+/* ── Après validation licence → flux normal PIN → Dashboard ── */
 function bootAfterLicence() {
-  if(cfg.pinEnabled&&cfg.pinHash) {
-    document.getElementById('lock-screen').style.display='flex';
-    document.getElementById('lock-sub').textContent='Entrez votre code PIN';
-  } else if(!cfg.pinEnabled&&!localStorage.getItem('p2p_pin_setup_shown')) {
-    localStorage.setItem('p2p_pin_setup_shown','1');
-    document.getElementById('setup-pin-screen').style.display='flex';
+  if (cfg.pinEnabled && cfg.pinHash) {
+    document.getElementById('lock-screen').style.display = 'flex';
+    document.getElementById('lock-sub').textContent = 'Entrez votre code PIN';
+  } else if (!cfg.pinEnabled && !localStorage.getItem('p2p_pin_setup_shown')) {
+    localStorage.setItem('p2p_pin_setup_shown', '1');
+    document.getElementById('setup-pin-screen').style.display = 'flex';
   } else {
-    isUnlocked=true;
+    isUnlocked = true;
     renderDash();
   }
 }
@@ -1799,11 +1889,10 @@ load();
 
 // Seed données initiales si vide
 if (!trades.length) {
-  cfg.capitalInitial = 186000;
+  cfg.capitalInitial = 10000;
   const seed = [
-    {date:'2026-03-30',ajout:0,montantFinal:186000,depenses:0,    depDetail:'',notes:'',nbTrades:0},
-    {date:'2026-04-05',ajout:0,montantFinal:217000,depenses:5000, depDetail:'',notes:'',nbTrades:0},
-    {date:'2026-04-12',ajout:0,montantFinal:240000,depenses:18350,depDetail:'5000f/illimité + 10225f/Chola',notes:'',nbTrades:0},
+    {date:'2026-03-30',ajout:0,montantFinal:10000,depenses:0,    depDetail:'',notes:'',nbTrades:0},
+    
   ];
   let prevEvol = cfg.capitalInitial;
   for (const s of seed) {
@@ -1822,13 +1911,11 @@ if (!trades.length) {
   save();
 }
 
-// Vérifier la licence en PREMIER, puis PIN si OK
-licCheck().then(valid => { if(valid) bootAfterLicence(); });
+// 1. Vérifier la licence → si OK, démarrer normalement
+licCheck().then(valid => { if (valid) bootAfterLicence(); });
 
 fetchRate();
 setInterval(fetchRate, 60000);
-
-// Enregistrer le Service Worker
 registerSW();
 </script>
 </body>
